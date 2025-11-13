@@ -21,17 +21,10 @@ function Login() {
 
                 </div>
 
-                <a
-                    href="#"
-                    className="forgot-password"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        // Replace this 
-                        alert("Redirecting to password recovery...");
-                    }}
-                >
+                <a href="/forgot-password" className="forgot-password">
                     Forgot Password
                 </a>
+
 
                 <button className="login-btn">Login</button>
             </div>

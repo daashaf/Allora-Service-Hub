@@ -1,50 +1,32 @@
 import React, { useState } from "react";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase"; //  import Firebase auth
-import "./Login.css";
+import "./AgentLogin.css";
 
-function Login() {
+function AgentLogin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [errors, setErrors] = useState({});
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleLogin = (e) => {
         e.preventDefault();
-        let valid = true;
-        let errors = {};
-
-        if (!email) {
-            errors.email = "Email is required";
-            valid = false;
-        }
-
-        if (!password) {
-            errors.password = "Password is required";
-            valid = false;
-        }
-
-        setErrors(errors);
-        if (!valid) return;
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            navigate("/dashboard"); //  successful login
-        } catch (error) {
-            setErrors({ general: "Invalid email or password" });
-            console.error(error);
-        }
+        const auth = getAuth();
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                navigate("/agent-dashboard");
+            })
+            .catch(() => setError("Invalid email or password. Please try again."));
     };
 
     return (
         <div className="login-page">
             <h1 className="title">ALLORA SERVICE HUB</h1>
-            <p className="subtitle">AS A CUSTOMER SUPPORT</p>
+            <p className="subtitle">AGENT LOGIN PORTAL</p>
 
             <div className="login-container">
-                <h2>Login</h2>
+                <h2>Agent Login</h2>
                 <form onSubmit={handleLogin}>
                     <input
                         type="email"
@@ -52,8 +34,8 @@ function Login() {
                         className="input-box"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        required
                     />
-                    {errors.email && <p className="error-msg">{errors.email}</p>}
 
                     <div className="password-container">
                         <input
@@ -62,6 +44,7 @@ function Login() {
                             className="input-box"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
                         <span
                             className="eye-icon"
@@ -70,25 +53,16 @@ function Login() {
                             {showPassword ? "🙈" : "👁"}
                         </span>
                     </div>
-                    {errors.password && <p className="error-msg">{errors.password}</p>}
-                    {errors.general && <p className="error-msg">{errors.general}</p>}
 
-                    <a href="/forgot-password" className="forgot-password">
-                        Forgot Password?
-                    </a>
+                    {error && <p className="error-msg">{error}</p>}
 
                     <button type="submit" className="login-btn">
                         Login
-
                     </button>
-
-                    <p className="signup-link">
-                        New user? <a href="/signup">Sign up here</a>
-                    </p>
                 </form>
             </div>
         </div>
     );
 }
 
-export default Login;
+export default AgentLogin;

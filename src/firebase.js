@@ -1,18 +1,20 @@
 // firebase.js
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyC6xm6G_HmlQaLLYuJMUsjUVvJ8dWo8yp4",
-    authDomain: "alloraservicehub.firebaseapp.com",
-    projectId: "alloraservicehub",
-    storageBucket: "alloraservicehub.firebasestorage.app",
-    messagingSenderId: "441991405079",
-    appId: "1:441991405079:web:06c26866fabaffea880652"
+    apiKey: "AIzaSyA1gGqKyv1Lo_wH5SNsVqPB92SW1GgGPa8",
+    authDomain: "allora-serice-hub.firebaseapp.com",
+    projectId: "allora-serice-hub",
+    storageBucket: "allora-serice-hub.appspot.com",   // ✅ FIXED
+    messagingSenderId: "47437060835",
+    appId: "1:47437060835:web:0c6d304f8f3953896c43d6"
 };
 
-const app = initializeApp(firebaseConfig);
+// Prevent duplicate app error
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 

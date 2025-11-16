@@ -160,7 +160,7 @@ function AgentDashboard() {
                                             <select
                                                 value={t.status}
                                                 onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                                                className={`status-dropdown ${t.status.replace(/\s/g, "")}`}
+                                                className={`status-dropdown ${(t.status || "Open").replace(/\s/g, "")}`}
                                             >
                                                 <option value="Open">Open</option>
                                                 <option value="In Progress">In Progress</option>
@@ -215,7 +215,25 @@ function AgentDashboard() {
 
             {/*  FOOTER  */}
             <footer className="support-footer">
-                <p>© 2025 Allora Service Hub | Agent Panel</p>
+                <p>© 2025 Allora Service Hub. All rights reserved.</p>
+                <div className="footer-social">
+                    <p>To know more about our website, visit us on:</p>
+                    <div className="social-icons">
+                        <a href="https://www.facebook.com" target="_blank" rel="noreferrer">
+                            <i className="bi bi-facebook"></i>
+                        </a>
+                        <a
+                            href="https://www.instagram.com"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <i className="bi bi-instagram"></i>
+                        </a>
+                        <a href="https://www.tiktok.com" target="_blank" rel="noreferrer">
+                            <i className="bi bi-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
             </footer>
         </div>
     );

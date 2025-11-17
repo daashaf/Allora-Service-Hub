@@ -15,17 +15,25 @@ import { app } from "../firebase";
 import "./Dashboard.css";
 
 function Dashboard() {
+
     const navigate = useNavigate();
     const auth = getAuth(app);
     const db = getFirestore(app);
 
     // States
+    const [successMessage, setSuccessMessage] = useState("");
+
     const [showLogout, setShowLogout] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [showTickets, setShowTickets] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTopic, setActiveTopic] = useState(null);
     const [openFaq, setOpenFaq] = useState(null);
+
+    const [feedbackTicket, setFeedbackTicket] = useState(null);
+
+
+
 
     // Real Data States
     const [notifications, setNotifications] = useState([]);
@@ -378,6 +386,8 @@ function Dashboard() {
                                     <th>Subject</th>
                                     <th>Status</th>
                                     <th>Created At</th>
+                                    <th>Feedback</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -389,6 +399,20 @@ function Dashboard() {
                                         <td>{t.subject}</td>
                                         <td>{t.status}</td>
                                         <td>{formatDate(t.createdAt)}</td>
+
+                                        <td>   {/*  NEW */}
+                                            {t.status === "Resolved" ? (
+                                                <button
+                                                    className="feedback-btn"
+                                                    onClick={() => setFeedbackTicket(t)}
+                                                >
+                                                    Give Feedback
+                                                </button>
+                                            ) : (
+                                                "—"
+                                            )}
+                                        </td>
+
                                     </tr>
                                 ))}
                             </tbody>
@@ -429,6 +453,83 @@ function Dashboard() {
                     </div>
                 )}
             </div>
+            {/* ⭐ FEEDBACK POPUP (NEW) */}
+            {feedbackTicket && (
+                <div className="feedback-popup">
+                    <div className="feedback-box">
+                        <h3>Feedback for: {feedbackTicket.subject}</h3>
+
+                        <label>Your Rating:</label>
+                        <select
+                            className="input-box"
+                            value={feedbackTicket.rating || ""}
+                            onChange={(e) =>
+                                setFeedbackTicket({ ...feedbackTicket, rating: e.target.value })
+                            }
+                        >
+                            <option value="">Select rating</option>
+                            <option value="1">⭐ 1 - Bad</option>
+                            <option value="2">⭐ 2 - Poor</option>
+                            <option value="3">⭐ 3 - Okay</option>
+                            <option value="4">⭐ 4 - Good</option>
+                            <option value="5">⭐ 5 - Excellent</option>
+                        </select>
+
+                        <label>Your Feedback:</label>
+                        <textarea
+                            className="input-box"
+                            rows={3}
+                            placeholder="Write your feedback..."
+                            value={feedbackTicket.feedback || ""}
+                            onChange={(e) =>
+                                setFeedbackTicket({ ...feedbackTicket, feedback: e.target.value })
+                            }
+                        ></textarea>
+
+                        <div className="popup-buttons">
+                            <button
+                                className="submit-btn"
+                                onClick={async () => {
+                                    try {
+                                        await addDoc(collection(db, "feedback"), {
+                                            ticketId: feedbackTicket.id,
+                                            subject: feedbackTicket.subject,
+                                            rating: feedbackTicket.rating || "",
+                                            feedback: feedbackTicket.feedback || "",
+                                            userEmail: feedbackTicket.userEmail,
+                                            userName: feedbackTicket.userName,
+                                            createdAt: serverTimestamp(),
+                                        });
+                                        setSuccessMessage("Thank you! Your feedback has been submitted successfully.");
+                                        setFeedbackTicket(null);
+
+                                        setTimeout(() => setSuccessMessage(""), 3000); // hide after 3 sec
+
+                                    } catch (err) {
+                                        console.error("Error submitting feedback:", err);
+                                    }
+                                }}
+
+                            >
+                                Submit
+                            </button>
+
+                            <button
+                                className="cancel-btn"
+                                onClick={() => setFeedbackTicket(null)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {successMessage && (
+                <div className="success-toast">
+                    <i className="bi bi-check-circle-fill"></i>
+                    <span>{successMessage}</span>
+                </div>
+            )}
 
             {/*  FOOTER  */}
             <footer className="support-footer">
